@@ -13,7 +13,7 @@ Docker for Windows (tested with WSL2)
 
 ## Set up
 
-Clone project and run dns_install.bat.
+Clone project and run dns_install.bat. Then go to http://demo.docker to verify.
 
 ### dns_install.bat
 
