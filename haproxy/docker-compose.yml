@@ -1,0 +1,27 @@
+#https://serverfault.com/questions/820539/how-to-proxy-multiple-tcp-streams-on-one-port-with-nginx
+#https://hub.docker.com/_/haproxy
+#https://github.com/Cloudstek/docker-haproxy/blob/master/docker-compose.yml
+#https://github.com/Cloudstek/docker-haproxy
+#https://gist.github.com/cmer/e58e90dbf820a850ff4f136f85697be0
+#https://stackoverflow.com/questions/61113433/is-it-possible-to-redirect-a-tcp-connection-based-on-host-name
+#https://dltlabs.medium.com/haproxy-logging-cd4c0a9f1f03
+#https://gist.github.com/git001/73d1b7bcc3813ba40028c887e4f3e7f6
+#https://www.haproxy.com/blog/route-ssh-connections-with-haproxy/
+#https://dev.to/samuyi/the-how-to-of-ssh-port-forwarding-1f4e
+#https://www.metaltoad.com/blog/proxying-ms-sql-connections-using-putty
+#https://github.com/matriphe/docker-ssh-tunnel-db
+#https://tech.osteel.me/posts/docker-for-local-web-development-part-5-https-all-the-things
+
+version: "3.7"
+services:
+    sql:
+        image: haproxy 
+        container_name: haproxy
+        network_mode: bridge
+        volumes:
+            - ./:/usr/local/etc/haproxy
+            - ./certs:/usr/local/etc/haproxy-certs
+            - ./logs:/usr/local/etc/logs
+        ports:
+            - 443:443
+            

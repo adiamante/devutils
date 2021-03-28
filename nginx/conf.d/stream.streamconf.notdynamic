@@ -1,0 +1,70 @@
+#server {
+#	#https://techcommunity.microsoft.com/t5/azure-sql/using-a-tcp-proxy-to-connect-to-sql-database-over-vpn/ba-p/390962
+#	listen 1433;
+#	server_name "~(.*).docker";	#$1 is the subdomain
+#	
+#	resolver 127.0.0.11;	#Docker embedded DNS server
+#	
+#	proxy_pass $1:1433;
+#	proxy_connect_timeout 1s; # detect failure quickly
+#}
+#
+#server {
+#	listen 1434 udp;
+#	server_name "~(.*).docker";	#$1 is the subdomain
+#	
+#	resolver 127.0.0.11;	#Docker embedded DNS server
+#	
+#	proxy_pass $1:1434;
+#	proxy_connect_timeout 1s; # detect failure quickly
+#	
+#}
+
+#https://dev.to/jordonr/reverse-proxy-ms-sql-with-nginx-3e90
+#https://gist.github.com/kekru/c09dbab5e78bf76402966b13fa72b9d2
+
+#https://serverfault.com/questions/640174/nginx-http-prefixes-in-upstream-server
+
+map $ssl_preread_server_name  $targetBackend {
+	~^(?<subdomain>.+).mydomain.com$ $subdomain:1433;
+#	sqltest1.docker sqltest1;
+}
+
+#upstream sqltest1 {
+#	server sqltest1:1433;
+#}
+
+server {
+	listen                  443;
+	ssl_preread             on;
+	proxy_connect_timeout   20s;  # max time to connect to pserver
+	proxy_timeout           30s;  # max time between successive reads or writes
+	resolver 127.0.0.11;
+	
+	proxy_pass              $targetBackend;
+}    
+	
+#server {
+#        listen                  443;
+#        ssl_preread             on;
+#        proxy_connect_timeout   20s;  # max time to connect to pserver
+#        proxy_timeout           30s;  # max time between successive reads or writes
+#        proxy_pass              sqltest1:1433;
+#}
+
+#server {
+#	listen 1433;
+#	
+#	proxy_connect_timeout 1s;
+#    proxy_timeout 3s;
+#	resolver 127.0.0.11;
+#	
+#	ssl_certificate /etc/nginx/certs/docker.crt;
+#	ssl_certificate_key /etc/nginx/certs/docker.key;
+#	
+#	#proxy_pass $targetBackend;
+#	
+#	proxy_pass $targetBackend;
+#	
+#	ssl_preread on;
+#}

@@ -1,0 +1,11 @@
+#https://docker-curriculum.com/
+version: "3.8"
+services:
+    example.docker:                 #postfix .docker to resolve in internal network and host
+        container_name: example
+        image: prakhar1989/static-site
+        
+networks:
+    default:
+        external:
+            name: dockerdev

@@ -1,0 +1,29 @@
+server {
+
+	#deny all;
+	
+	listen 80;
+	server_name *.docker;
+
+	location / {
+		return 301 https://$host$request_uri;
+	}
+}
+
+server {
+	listen 443 ssl;
+	#https://serverfault.com/questions/349470/regular-expression-from-the-hostname-in-the-proxy-pass-uri-in-nginx
+	#server_name "~(.*).docker";	#$1 is the subdomain
+	server_name *.docker;
+	server_tokens off;
+	#https://stackoverflow.com/questions/35744650/docker-network-nginx-resolver
+	resolver 127.0.0.11;	#Docker embedded DNS server
+	
+	ssl_certificate /etc/nginx/certs/docker.crt;
+	ssl_certificate_key /etc/nginx/certs/docker.key;
+	
+	location / {
+		#proxy_pass http://$1;
+		proxy_pass http://$host$request_uri;
+	}
+}
