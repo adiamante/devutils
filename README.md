@@ -1,5 +1,7 @@
 ﻿# devutils
 
+![dns](https://github.com/adiamante/devutils/blob/main/images/dns.svg)
+
 A set of generic utility docker services to facilitate Windows development of microservice oriented projects. Current services enable the following:
 
 - host name with pattern *.docker redirect to loopback address '127.0.0.1' to be resolved by nginx listening on port 80 and 443
