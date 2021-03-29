@@ -15,7 +15,11 @@ Docker for Windows (tested with WSL2)
 
 ## Set up
 
-Clone project and run dns_install.bat. Then go to http://demo.docker to verify.
+Clone project and run dns_install.bat. 
+
+Then go to http://demo.docker to verify. 
+
+If that does not work and pinging the pattern *.docker does not return 127.0.0.1, your network interface might not be be Wi-fi or Ethernet. If that is the case, edit [dns_install.bat](https://github.com/adiamante/devutils/blob/main/dns_install.bat) near the bottom with your network interface name and run again.
 
 ### dns_install.bat
 
