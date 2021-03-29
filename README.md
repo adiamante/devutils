@@ -45,18 +45,26 @@ run dns-example_up.bat. http://example.docker should now resolve to the service 
 
 ## Usage
 
-Create a docker-compose file and name the service with the pattern *.docker. Make sure the network is devdns is being used. After your service is up you can now access with the browser by using http://{servicename}. Use dns-example-docker-compose.yml for reference.
+Create a docker-compose file and name the service with the pattern *.docker. Make sure the docker network devdns is being used. After your service is up, you can now access with the browser by using http://{servicename}. Use [dns-example-docker-compose.yml](https://github.com/adiamante/devutils/blob/main/dns-example-docker-compose.yml) for reference.
 
 ## Limitations
 
-The utility services only enables implicit resolving for http services. Tcp/udp based services such as sql, mail servers or message queue servers run on the transport layer which do not provide enough information for a reverse proxy to redirect traffic.
+The utility docker services only enables implicit resolving for http applications. Tcp/udp based services such as sql, mail servers or message queue servers run on the transport layer which do not provide enough information for a reverse proxy to redirect traffic.
 
 Your service may run on a different port than 80 or 443. You may have to alter '/nginx/conf.d/http.websiteconf' to accomidate.
 
-## nginx service alternative
+## nginx service alternatives
+
+### nginx proxy
 
 [nginx proxy](https://index.docker.io/u/jwilder/nginx-proxy/) provides a more explicit approach in that you provide container environment variables to define the URL/port.
+
+### HAproxy
+
+HAproxy is also a viable alternative since it can also serve as a reverse proxy.
 
 ## Tcp/Udp reverse proxy notes
 
 In theory, usage of SNI (Service Name Indication) through TLS handshake can provide a reverse proxy (nginx/HAproxy) enough information for server redirection. It proved more trouble than it was worth attempting to port forward to services with an ssh server in the internal docker network.
+
+If a Windows host can ping linux containers, there would be no need for a reverse proxy and it would work for tcp and udp services. All we would need is a DNS service with access to the docker engine ([devdns](https://github.com/ruudud/devdns) or something utilizing [docker-gen](https://github.com/jwilder/docker-gen) would suffice). Unfortunately this is a limitation of docker for Windows. Apparently, linux hosts can ping linux containers straight out of the box (maybe be because the host and container are both linux). It would be cool if Windows developers got some love though. 
