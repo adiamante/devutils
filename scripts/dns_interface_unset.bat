@@ -67,8 +67,19 @@ REM Copy hosts configuration if local is newer
 REM https://superuser.com/questions/463096/change-dns-with-script
 REM https://www.reddit.com/r/sysadmin/comments/ao4gad/using_netsh_to_set_secondary_dns/
 
-netsh interface ipv4 set dns "Wi-fi" dhcp
-
 netsh interface ipv4 set dns "Ethernet" dhcp
+
+for /F "tokens=*" %%I in ('netsh interface show interface') do (
+	set interface=%%I
+	
+	for /F "tokens=1,2,3,4" %%a in ("%%I") do (
+		::echo %%a %%b %%c %%d
+		if %%b EQU Connected (
+			if %%d NEQ vEthernet (
+				netsh interface ipv4 set dns %%d dhcp
+			)
+		)
+	)
+)
 
 pause

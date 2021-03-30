@@ -67,13 +67,22 @@ REM Copy hosts configuration if local is newer
 REM https://superuser.com/questions/463096/change-dns-with-script
 REM https://www.reddit.com/r/sysadmin/comments/ao4gad/using_netsh_to_set_secondary_dns/
 
-netsh interface ipv4 set dns "Wi-fi" static "127.0.0.1"
-netsh interface ipv4 add dns "Wi-fi" "8.8.8.8" index=2
-netsh interface ipv6 set dns "Wi-fi" static "::1"
+SETLOCAL ENABLEDELAYEDEXPANSION
 
-netsh interface ipv4 set dns "Ethernet" static "127.0.0.1"
-netsh interface ipv4 add dns "Ethernet" "8.8.8.8" index=2
-netsh interface ipv6 set dns "Ethernet" static "::1"
+for /F "tokens=*" %%I in ('netsh interface show interface') do (
+	set interface=%%I
+	
+	for /F "tokens=1,2,3,4" %%a in ("%%I") do (
+		::echo %%a %%b %%c %%d
+		if %%b EQU Connected (
+			if %%d NEQ vEthernet (
+				netsh interface ipv4 set dns %%d static "127.0.0.1"
+				netsh interface ipv4 add dns %%d "8.8.8.8" index=2
+				netsh interface ipv6 set dns %%d static "::1"
+			)
+		)
+	)
+)
 
 docker network create -d bridge dockerdev
 
