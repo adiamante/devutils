@@ -22,8 +22,107 @@ server {
 	ssl_certificate /etc/nginx/certs/docker.crt;
 	ssl_certificate_key /etc/nginx/certs/docker.key;
 	
+	#https://keycloak.discourse.group/t/keycloak-in-docker-behind-reverse-proxy/1195/12
 	location / {
 		#proxy_pass http://$1;
+		proxy_set_header X-Forwarded-For $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection ‘upgrade’;
+		proxy_set_header Host $host;
+		proxy_pass http://$host$request_uri;
+	}
+}
+
+
+server {
+
+	#deny all;
+	
+	listen 80;
+	server_name *.local.com;
+
+	location / {
+		return 301 https://$host$request_uri;
+	}
+}
+
+server {
+	listen 443 ssl;
+	
+	server_name *.local.com;
+	server_tokens off;
+	resolver 127.0.0.11;	#Docker embedded DNS server
+	
+	ssl_certificate /etc/nginx/certs/local.com.crt;
+	ssl_certificate_key /etc/nginx/certs/local.com.key;
+	
+	location / {
+		proxy_set_header X-Forwarded-For $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection ‘upgrade’;
+		proxy_set_header Host $host;
+		proxy_pass http://$host$request_uri;
+	}
+}
+
+#server {
+#
+#	server_name "~(.*).local.com";	#$1 is the subdomain
+#	
+#	location / {
+#		#return 301 https://$host$request_uri;
+#		return 301 $scheme://$1.local$request_uri;
+#	}
+#}
+
+#server {
+#	listen 443 ssl;
+#	
+#	server_name "~(.*).local.com";
+#	server_tokens off;
+#	resolver 127.0.0.11;	#Docker embedded DNS server
+#	
+#	ssl_certificate /etc/nginx/certs/local.crt;
+#	ssl_certificate_key /etc/nginx/certs/local.key;
+#	
+#	location / {
+#		proxy_set_header X-Forwarded-Proto $scheme;
+#		proxy_set_header Upgrade $http_upgrade;
+#		proxy_set_header Connection ‘upgrade’;
+#		proxy_pass http://$1.local$request_uri;
+#	}
+#}
+
+server {
+
+	#deny all;
+	
+	listen 80;
+	server_name *.local;
+
+	location / {
+		return 301 https://$host$request_uri;
+	}
+}
+
+server {
+	listen 443 ssl;
+	
+	server_name *.local;
+	server_tokens off;
+	resolver 127.0.0.11;	#Docker embedded DNS server
+	
+	ssl_certificate /etc/nginx/certs/local.crt;
+	ssl_certificate_key /etc/nginx/certs/local.key;
+	
+	location / {
+		proxy_set_header X-Forwarded-For $host;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection ‘upgrade’;
+		proxy_set_header Host $host;
 		proxy_pass http://$host$request_uri;
 	}
 }

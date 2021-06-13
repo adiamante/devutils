@@ -1,27 +1,19 @@
 version: "3.8"
 services:
-    #instead of dev dns will be using docker's implicit dns resolver by service name (as long as within the same network)
-    #https://github.com/ruudud/devdns
-    #container to container communication as long as dns is set to dockerdns ip address
-    #pattern to reach other containers is {container_name}.docker (ex. dockerdns.docker)
-    #dockerdns:
-    #    container_name: dockerdns
-    #    image: ruudud/devdns
-    #    #network_mode: bridge        #use default bridge network instead of implicit docker-compose custom network
-    #    environment:
-    #        DNS_DOMAIN: "docker"
-    #    volumes:
-    #        - /var/run/docker.sock:/var/run/docker.sock:ro
-    #https://github.com/finboxio/docker-dns
-    #wildcard *.docker host addresses points to 127.0.0.1
-    #dns_install.bat has commands that add 127.0.0.1 as DNS which will point to localdns
     localdns:
         container_name: localdns
         network_mode: bridge        #use default bridge network instead of implicit docker-compose custom network
-        image: finboxio/docker-dns
+        image: jpillora/dnsmasq
         restart: always
         ports:
             - "53:53/udp"
+            - "5380:8080"
+        environment:
+            MAPPED_HOSTS: "/etc/docker-dns/hosts.json"
+            HTTP_USER: "user"
+            HTTP_PASS: "user"
+        volumes:
+            - ./dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf
     nginx:
         container_name: nginx
         image: nginx:alpine
